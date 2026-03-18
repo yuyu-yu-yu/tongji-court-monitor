@@ -1,6 +1,4 @@
-node_modules/
+﻿node_modules/
 .browser-profile/
 logs/
 coverage/
-package-lock.json
-

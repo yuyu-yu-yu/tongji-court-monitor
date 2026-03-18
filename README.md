@@ -1,73 +1,63 @@
-# TicketHunter
+﻿# Tongji Court Monitor
 
-This repository contains two separate tools:
+A Tampermonkey userscript for monitoring Tongji stadium badminton court availability on the Tongji H5 venue page.
 
-- [tongji-courts-monitor.user.js](/C:/TicketHunter/tampermonkey/tongji-courts-monitor.user.js): a Tongji stadium H5 availability monitor that runs inside your normal Chrome page through Tampermonkey.
-- `arm`: the older Damai helper that only prepares the page and stops before final order submission.
+## What It Does
 
-## Tongji Court Monitor
+- runs inside your normal Chrome session
+- watches the Tongji H5 venue detail page
+- detects when court availability appears
+- sends a local browser notification and sound alert
+- optionally sends an Enterprise WeChat webhook message
+- avoids repeated alerts for the same unchanged availability
 
-The recommended Tongji path is now the Tampermonkey userscript, not the Playwright watcher. The Tongji H5 site did not render reliably inside an automated browser profile, so the monitor now runs in your everyday Chrome session and only reads page content plus sends alerts.
-
-### Install Tampermonkey
+## Install
 
 1. Install the Tampermonkey Chrome extension.
-2. Open [tongji-courts-monitor.user.js](/C:/TicketHunter/tampermonkey/tongji-courts-monitor.user.js).
-3. Copy the whole file content.
-4. In Tampermonkey, create a new script and replace the default content with the copied script.
-5. Save the script.
+2. Open [tampermonkey/tongji-courts-monitor.user.js](tampermonkey/tongji-courts-monitor.user.js).
+3. Copy the entire file.
+4. Create a new script in Tampermonkey.
+5. Replace the default content with the copied script.
+6. Save the script.
 
-### Use It
+## Use
 
 1. Open your normal Chrome browser.
 2. Log into the Tongji stadium site the same way you normally do.
-3. Open the target venue page:
+3. Navigate to the badminton venue page:
    `https://stadium.tongji.edu.cn/phone/#/detailAppoint?id=c7018ac0-af1f-4eb9-8f42-29156770a09c`
-4. Leave that page open.
+4. Leave the page open.
 
-The script will:
+The script polls the visible page, auto-reloads the page periodically to fetch fresh data, and only notifies once for the same unchanged availability.
 
-- watch the page in your normal browser session
-- scan date cards and nearby slot rows
-- show a small status panel in the lower-right corner
-- alert when availability appears
-- optionally send a text message to an Enterprise WeChat webhook
-
-### Configure It
+## Configure
 
 Edit the `CONFIG` object at the top of the userscript.
 
-Most important fields:
+Useful fields:
 
 - `pollIntervalMs`
+- `pageReloadIntervalMs`
 - `enterpriseWechatWebhookUrl`
 - `fullKeywords`
 - `availableKeywords`
 - `unavailableKeywords`
 
-Enterprise WeChat setup:
-
-1. Create a group robot in Enterprise WeChat.
-2. Copy the webhook URL.
-3. Paste it into:
+Enterprise WeChat example:
 
 ```js
 enterpriseWechatWebhookUrl: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY"
 ```
 
-If you leave it empty, the script still works with local browser notifications and sound.
+## Current Behavior
 
-### Current Limits
+- checks the current DOM frequently
+- forces a page reload on a longer interval to fetch fresh server data
+- sends one alert per distinct availability state
+- sends another alert only if availability changes and later reappears
 
-- It does not click anything.
-- It does not book courts automatically.
-- It depends on the Tongji page structure staying similar.
-- If the page stops updating by itself, you may still need to refresh the page manually or enhance the script later.
+## Limits
 
-## Damai Assistant
-
-The original Damai assistant is still available:
-
-```powershell
-npm run arm -- --config .\config\damai.config.json
-```
+- it does not book courts automatically
+- it depends on the Tongji page structure staying similar
+- it can still miss very short-lived availability changes between refreshes
