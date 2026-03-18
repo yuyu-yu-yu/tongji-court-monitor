@@ -1,0 +1,62 @@
+﻿{
+  "targetUrl": "https://stadium.tongji.edu.cn/phone/#/detailAppoint?id=c7018ac0-af1f-4eb9-8f42-29156770a09c",
+  "entryUrl": "https://stadium.tongji.edu.cn/phone/",
+  "pollIntervalMs": 30000,
+  "settleDelayMs": 2500,
+  "entrySettleDelayMs": 1800,
+  "browserChannel": "chrome",
+  "userDataDir": "./.browser-profile/tongji-courts",
+  "windowWidth": 430,
+  "windowHeight": 932,
+  "locale": "zh-CN",
+  "timezoneId": "Asia/Shanghai",
+  "userAgent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36",
+  "isMobile": true,
+  "hasTouch": true,
+  "deviceScaleFactor": 2,
+  "fullKeywords": [
+    "已订满",
+    "已约满",
+    "满"
+  ],
+  "availableKeywords": [
+    "可预约",
+    "可预订",
+    "空闲",
+    "剩余"
+  ],
+  "unavailableKeywords": [
+    "不可预约",
+    "未开放",
+    "已结束"
+  ],
+  "enterpriseWechatWebhookUrl": "",
+  "loginKeywords": [
+    "登录",
+    "统一身份认证",
+    "账号",
+    "密码"
+  ],
+  "venueNameSelectors": [
+    "h1",
+    "h2",
+    "[class*='title']",
+    "[class*='name']"
+  ],
+  "dateCardSelectors": [
+    "[class*='date']",
+    "[class*='day']",
+    "[class*='week']",
+    ".van-tab",
+    ".van-col"
+  ],
+  "slotRowSelectors": [
+    "[class*='time']",
+    "[class*='slot']",
+    "[class*='appoint']",
+    ".van-cell",
+    ".van-row"
+  ],
+  "logsDir": "./logs",
+  "inspectUnknownDays": true
+}

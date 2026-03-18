@@ -1,0 +1,50 @@
+{
+  "eventUrl": "https://detail.damai.cn/item.htm?id=REPLACE_WITH_EVENT_ID",
+  "saleTime": "2026-03-18T12:00:00+08:00",
+  "buyButtonSelectors": [
+    ".buybtn",
+    ".buy-button",
+    ".buy-button-primary"
+  ],
+  "queuePageSignals": [
+    "text=当前排队人数太多啦",
+    "text=努力刷新",
+    "title=排队"
+  ],
+  "confirmPageSignals": [
+    "title=确认订单",
+    "text=确认订单",
+    ".confirm-order"
+  ],
+  "agreementSelectors": [
+    "input[type=\"checkbox\"]",
+    ".agreement input[type=\"checkbox\"]"
+  ],
+  "submitButtonSelectors": [
+    ".submit-btn",
+    ".next-btn",
+    ".confirm-submit"
+  ],
+  "prewarmSeconds": 15,
+  "clockSource": "system",
+  "expectedEventTitle": "替换为演出标题关键字",
+  "expectedTicketLabel": "替换为票档关键字",
+  "expectedQuantity": 1,
+  "buyReadyTextPatterns": [
+    "立即购买",
+    "立即预订"
+  ],
+  "disabledTextPatterns": [
+    "预约抢票",
+    "即将开售",
+    "未开售",
+    "缺货登记",
+    "售罄"
+  ],
+  "browserChannel": "chrome",
+  "userDataDir": "./.browser-profile/damai",
+  "windowWidth": 1440,
+  "windowHeight": 960,
+  "locale": "zh-CN",
+  "timezoneId": "Asia/Shanghai"
+}
