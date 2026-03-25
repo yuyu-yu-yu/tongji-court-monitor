@@ -1,7 +1,6 @@
 ﻿// ==UserScript==
 // @name         Tongji Court Monitor
 // @namespace    https://stadium.tongji.edu.cn/
-// @version      0.6.1
 // @description  Monitor Tongji stadium H5 court availability and alert when slots appear.
 // @match        https://stadium.tongji.edu.cn/phone/*
 // @grant        GM_notification
@@ -17,7 +16,8 @@
     pollIntervalMs: 5000,
     initialDelayMs: 2500,
     mutationDebounceMs: 800,
-    pageReloadIntervalMs: 15000,
+    pageReloadIntervalMs: 60000,
+    stableDateCardThreshold: 5,
     enterpriseWechatWebhookUrl: "",
     fullKeywords: ["\u5df2\u8ba2\u6ee1", "\u5df2\u7ea6\u6ee1", "\u6ee1"],
     availableKeywords: ["\u53ef\u9884\u7ea6", "\u53ef\u9884\u8ba2", "\u7a7a\u95f2", "\u5269\u4f59"],
@@ -133,7 +133,7 @@
           persistState();
           notify(snapshot);
         }
-      } else {
+      } else if (snapshot.isStable) {
         lastDigest = "";
         persistState();
       }
@@ -150,7 +150,7 @@
   }
 
   function collectSnapshot() {
-    const venueName = firstText(CONFIG.venueNameSelectors) || document.title || "Tongji Court";
+    const venueName = firstText(CONFIG.venueNameSelectors) || document.title || "\u540c\u6d4e\u573a\u5730";
     const dateCards = collectDateCards();
     const availableDays = dateCards.filter((day) => day.status === "available" || day.slots.length > 0);
 
@@ -159,6 +159,7 @@
       url: location.href,
       dateCards,
       availableDays,
+      isStable: dateCards.length >= CONFIG.stableDateCardThreshold,
       collectedAt: new Date().toLocaleString("zh-CN", { hour12: false })
     };
   }
@@ -443,53 +444,56 @@
       "border-radius:10px",
       "box-shadow:0 8px 24px rgba(0,0,0,.25)"
     ].join(";");
-    panel.innerHTML = "<strong>Tongji Court Monitor</strong><div>Waiting for target page...</div>";
+    panel.innerHTML = "<strong>\u540c\u6d4e\u573a\u5730\u76d1\u63a7</strong><div>\u7b49\u5f85\u8fdb\u5165\u76ee\u6807\u9875\u9762...</div>";
     document.documentElement.appendChild(panel);
     return panel;
   }
 
   function updateOverlay(snapshot) {
     const statusText = snapshot.error
-      ? `Error: ${snapshot.error}`
+      ? `\u9519\u8bef: ${snapshot.error}`
       : snapshot.availableDays.length > 0
-        ? `${snapshot.availableDays.length} day(s) available`
-        : "No availability";
+        ? `\u53d1\u73b0 ${snapshot.availableDays.length} \u5929\u53ef\u9884\u7ea6`
+        : snapshot.isStable
+          ? "\u6682\u65e0\u7a7a\u4f4d"
+          : "\u9875\u9762\u6570\u636e\u5237\u65b0\u4e2d";
 
     const lines = snapshot.availableDays.slice(0, 3).map((day) => {
-      const slotText = day.slots.length > 0 ? day.slots.map((slot) => slot.label).join(", ") : "check page";
+      const slotText = day.slots.length > 0 ? day.slots.map((slot) => slot.label).join(", ") : "\u8bf7\u624b\u52a8\u67e5\u770b\u9875\u9762";
       return `${day.label}: ${slotText}`;
     });
 
     overlay.innerHTML = [
-      "<strong>Tongji Court Monitor</strong>",
+      "<strong>\u540c\u6d4e\u573a\u5730\u76d1\u63a7</strong>",
       `<div>${statusText}</div>`,
-      snapshot.collectedAt ? `<div>Last check: ${snapshot.collectedAt}</div>` : "",
-      snapshot.dateCards ? `<div>Cards parsed: ${snapshot.dateCards.length}</div>` : "",
-      `<div>Auto reload: ${Math.round(CONFIG.pageReloadIntervalMs / 1000)}s</div>`,
+      snapshot.collectedAt ? `<div>\u6700\u8fd1\u68c0\u67e5: ${snapshot.collectedAt}</div>` : "",
+      snapshot.dateCards ? `<div>\u5df2\u89e3\u6790\u65e5\u671f\u5361\u7247: ${snapshot.dateCards.length}</div>` : "",
+      snapshot.isStable === false ? "<div>\u6570\u636e\u72b6\u6001: \u672a\u7a33\u5b9a</div>" : "",
+      `<div>\u81ea\u52a8\u5237\u65b0\u95f4\u9694: ${Math.round(CONFIG.pageReloadIntervalMs / 1000)} \u79d2</div>`,
       lines.length > 0 ? `<div style=\"margin-top:6px\">${lines.join("<br>")}</div>` : ""
     ].join("");
   }
 
   function updateOverlayIdle() {
     overlay.innerHTML = [
-      "<strong>Tongji Court Monitor</strong>",
-      "<div>Waiting for target page...</div>",
-      `<div style=\"margin-top:6px\">Target id: ${CONFIG.venueDetailId}</div>`
+      "<strong>\u540c\u6d4e\u573a\u5730\u76d1\u63a7</strong>",
+      "<div>\u7b49\u5f85\u8fdb\u5165\u76ee\u6807\u9875\u9762...</div>",
+      `<div style=\"margin-top:6px\">\u76ee\u6807\u573a\u9986 id: ${CONFIG.venueDetailId}</div>`
     ].join("");
   }
 
   function updateOverlayWaiting() {
     overlay.innerHTML = [
-      "<strong>Tongji Court Monitor</strong>",
-      "<div>Target page detected.</div>",
-      "<div>Waiting for data...</div>"
+      "<strong>\u540c\u6d4e\u573a\u5730\u76d1\u63a7</strong>",
+      "<div>\u5df2\u8fdb\u5165\u76ee\u6807\u9875\u9762\u3002</div>",
+      "<div>\u6b63\u5728\u7b49\u5f85\u6570\u636e...</div>"
     ].join("");
   }
 
   function updateOverlayReloading() {
     overlay.innerHTML = [
-      "<strong>Tongji Court Monitor</strong>",
-      "<div>Refreshing page for fresh data...</div>"
+      "<strong>\u540c\u6d4e\u573a\u5730\u76d1\u63a7</strong>",
+      "<div>\u6b63\u5728\u5237\u65b0\u9875\u9762\u83b7\u53d6\u6700\u65b0\u6570\u636e...</div>"
     ].join("");
   }
 
